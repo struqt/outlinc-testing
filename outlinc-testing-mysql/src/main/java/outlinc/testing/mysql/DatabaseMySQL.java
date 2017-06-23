@@ -32,6 +32,7 @@ public class DatabaseMySQL {
             return this;
         }
         DBConfigurationBuilder builder = DBConfigurationBuilder.newBuilder();
+        builder.addArg("--user=root"); /* Fix fatal error in docker environment */
         builder.setPort(port); /* Port 0: detect free port */
         try {
             database = DB.newEmbeddedDB(builder.build());
