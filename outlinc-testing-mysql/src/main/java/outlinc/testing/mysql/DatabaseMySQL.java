@@ -23,11 +23,15 @@ public class DatabaseMySQL {
         return null == database ? -1 : database.getConfiguration().getPort();
     }
 
-    public DatabaseMySQL start(String databaseName) {
-        return start(0, databaseName);
+    public DatabaseMySQL startSampleDB() {
+        return this.start(0, "classicmodels", "sample.sql");
     }
 
-    synchronized public DatabaseMySQL start(int port, String databaseName) {
+    public DatabaseMySQL startSampleDB(int port) {
+        return this.start(port, "classicmodels", "sample.sql");
+    }
+
+    synchronized public DatabaseMySQL start(int port, String databaseName, String initSql) {
         if (database != null) {
             return this;
         }
@@ -37,7 +41,12 @@ public class DatabaseMySQL {
         try {
             database = DB.newEmbeddedDB(builder.build());
             database.start();
-            database.createDB(databaseName);
+            if (databaseName != null && databaseName.length() > 0) {
+                database.createDB(databaseName);
+            }
+            if (initSql != null && initSql.length() > 0) {
+                database.source(initSql);
+            }
             jdbcURL = builder.getURL(databaseName);
         } catch (ManagedProcessException e) {
             log.error(e.getMessage(), e);
